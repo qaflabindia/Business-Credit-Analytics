@@ -195,16 +195,3 @@ A generated dataset passes acceptance if all of the following are true:
 - [ ] `credit_hold_flag` customers have higher overdue rate than non-hold customers
 - [ ] Mean overdue rate in `severe_demand` > mean overdue rate in `baseline`
 
----
-
-## 8. Out of scope
-
-| Out of scope | Why |
-|---|---|
-| Corporate lending / facilities / covenants | Lending book function — separate dataset |
-| Commodity trading derivatives (MTM, PFE, CSA) | Trading book function — separate dataset |
-| PD/LGD/ECL modelling inputs | The AR dataset does not include default event labels |
-| Individual invoice-level AR | Dataset operates at customer-month aggregate level |
-| Real company financial data | Fully synthetic dataset |
-| Regulatory capital calculations | Not a regulatory submission |
-| Non-energy sectors | Calibration is specific to O&G |
