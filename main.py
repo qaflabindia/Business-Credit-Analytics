@@ -1,11 +1,11 @@
 """
-Credit Analytics — Synthetic Oil & Gas Credit Portfolio Generator
+Credit Analytics — Synthetic O&G Business AR Dataset Generator
 Entry point.
 
 Usage:
-  python main.py                     # standard scale (4 000 borrowers, 120 months)
-  python main.py --scale lite        # lite scale  (1 000 borrowers, 36 months)
-  python main.py --scale research    # research scale (15 000 borrowers, 180 months)
+  python main.py                     # standard scale (2 000 customers, 120 months)
+  python main.py --scale lite        # lite scale  (500 customers, 36 months)
+  python main.py --scale research    # research scale (8 000 customers, 180 months)
   python main.py --scenarios baseline severe_demand   # subset of scenarios
   python main.py --out ./my_data     # custom output directory
 """
@@ -13,7 +13,6 @@ import argparse
 import sys
 from pathlib import Path
 
-# Ensure the package is importable when run from the project root
 sys.path.insert(0, str(Path(__file__).parent))
 
 from credit_analytics.config import Config
@@ -22,7 +21,7 @@ from credit_analytics.pipeline import run
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Generate a synthetic oil & gas credit analytics dataset"
+        description="Generate a synthetic O&G business AR credit analytics dataset"
     )
     p.add_argument(
         "--scale",
@@ -43,10 +42,10 @@ def _parse_args() -> argparse.Namespace:
         help="Output directory for parquet files (default: data_out/)",
     )
     p.add_argument(
-        "--borrowers",
+        "--customers",
         type=int,
         default=None,
-        help="Override number of borrowers (overrides --scale)",
+        help="Override number of customers (overrides --scale)",
     )
     p.add_argument(
         "--months",
@@ -60,7 +59,6 @@ def _parse_args() -> argparse.Namespace:
 def main():
     args = _parse_args()
 
-    # Build config
     if args.scale == "lite":
         cfg = Config.lite()
     elif args.scale == "research":
@@ -68,23 +66,21 @@ def main():
     else:
         cfg = Config.standard()
 
-    # Apply overrides
-    if args.borrowers is not None:
-        cfg.n_borrowers = args.borrowers
+    if args.customers is not None:
+        cfg.n_customers = args.customers
     if args.months is not None:
         cfg.n_months = args.months
     cfg.output_dir = args.out
     cfg.generate_scenarios = args.scenarios
 
     print("=" * 60)
-    print("  Credit Analytics — Synthetic Dataset Generator")
+    print("  Credit Analytics — O&G Business AR Dataset Generator")
     print("=" * 60)
-    print(f"  Scale:       {cfg.scale}")
-    print(f"  Borrowers:   {cfg.n_borrowers:,}")
-    print(f"  Months:      {cfg.n_months}")
-    print(f"  Quarters:    {cfg.n_quarters}")
-    print(f"  Scenarios:   {', '.join(cfg.generate_scenarios)}")
-    print(f"  Output dir:  {cfg.output_dir}")
+    print(f"  Scale:      {cfg.scale}")
+    print(f"  Customers:  {cfg.n_customers:,}")
+    print(f"  Months:     {cfg.n_months}")
+    print(f"  Scenarios:  {', '.join(cfg.generate_scenarios)}")
+    print(f"  Output dir: {cfg.output_dir}")
     print("=" * 60)
     print()
 

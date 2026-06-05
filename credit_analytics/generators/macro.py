@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from typing import List
 
-from ..config import MACRO_BASELINE, SCENARIOS
+from ..config import MACRO_BASELINE
 
 
 # AR(1) volatility parameters (monthly standard deviation)
@@ -23,7 +23,6 @@ _AR_PARAMS = {
     "uk_gdp_yoy":             {"rho": 0.70, "sigma": 0.70},
     "unemployment_us":        {"rho": 0.92, "sigma": 0.25},
     "bbb_spread_bps":         {"rho": 0.88, "sigma": 18.0},
-    "policy_rate_bps":        {"rho": 0.95, "sigma": 12.0},
     "carbon_price_usd_tco2":  {"rho": 0.90, "sigma": 4.0,  "trend_per_month": 0.40},
     "usd_index":              {"rho": 0.90, "sigma": 1.20},
     "shipping_cost_index":    {"rho": 0.80, "sigma": 8.0},
@@ -48,8 +47,6 @@ _CORR_PAIRS = [
     ("bbb_spread_bps",      "global_gdp_yoy",       -0.50),
     ("bbb_spread_bps",      "brent_usd_bbl",        -0.30),
     ("bbb_spread_bps",      "unemployment_us",       0.60),
-    ("policy_rate_bps",     "us_gdp_yoy",            0.40),
-    ("policy_rate_bps",     "unemployment_us",       -0.45),
     ("brent_usd_bbl",       "shipping_cost_index",   0.45),
     ("brent_usd_bbl",       "usd_index",            -0.35),
     ("carbon_price_usd_tco2","brent_usd_bbl",        0.20),
@@ -106,7 +103,6 @@ def _apply_overlay(values: np.ndarray, scenario_id: str, n: int) -> np.ndarray:
             v[t, idx["unemployment_us"]]       += 6.0 * k
             v[t, idx["brent_usd_bbl"]]        *= (1.0 - 0.35 * k)
             v[t, idx["bbb_spread_bps"]]        += 250.0 * k
-            v[t, idx["policy_rate_bps"]]       -= 200.0 * k
 
     elif scenario_id == "geopolitical_supply":
         s0, s1, s2 = min(45, n - 1), min(54, n - 1), min(72, n - 1)
@@ -156,7 +152,7 @@ def generate_macro_paths(
 ) -> pd.DataFrame:
     """Generate monthly macro/commodity paths for all requested scenarios."""
     if scenarios is None:
-        scenarios = SCENARIOS
+        scenarios = ["baseline", "severe_demand", "geopolitical_supply", "disorderly_transition"]
 
     raw = rng.standard_normal((n_months, _N_VARS))
     correlated = raw @ _CHOL.T   # shape (n_months, n_vars)
